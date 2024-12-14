@@ -11,40 +11,43 @@ Ce script permet d'installer et de configurer automatiquement Arch Linux avec de
 ## Configuration
 Avant d'exécuter le script, vous devez modifier le fichier de configuration `config.cfg` selon vos besoins. Voici les options disponibles :
 
-1. **Réseau :**
+### 1. **Réseau :**
    - `USE_DHCP` : `true` pour utiliser DHCP, `false` pour une configuration manuelle.
    - `IP_ADDRESS`, `CIDR`, `GATEWAY`, `DNS` : Utilisez ces variables si `USE_DHCP` est `false`.
 
-2. **Disques :**
+### 2. **Disques :**
    - `DISK` : Chemin du disque principal (ex. : `/dev/sda`).
    - `PARTITION_TABLE_TYPE` : Type de table de partition (`gpt` ou `msdos` pour BIOS).
    - `BOOT_MODE` : `UEFI` ou `BIOS`.
-   - `NUM_PARTITIONS` : Nombre de partitions à créer.
+   - `NUM_PARTITIONS` : Nombre total de partitions.
 
-3. **Partitions :**
-   - `PART1_TYPE`, `PART2_TYPE`, `PART3_TYPE`, `PART4_TYPE` : Types de partitions (ex. : `EFI`, `swap`, `home`, `root`).
-   - `PART1_SIZE`, `PART2_SIZE`, `PART3_SIZE`, `PART4_SIZE` : Tailles des partitions (ex. : `10G`, `512M` , `100%`).
-   - `PART1_FS` , `PART2_FS` , `PART3_FS` , `PART4_FS` : Système de fichiers (ex. : `fat32` , `swap` , `ext4`)
-   - Assurez-vous que les partitions sont créées dans le bon ordre et que la partition `root` utilise tout l'espace restant.
+### 3. **Partitions :**
+   Au lieu de spécifier uniquement les tailles, les partitions utilisent désormais des valeurs explicites pour définir **le début et la fin**.
 
-4. **Système :**
-   - `HOSTNAME` : Nom d'hôte pour votre système.
-   - `LOCALE` : Locale du système (ex. : `fr_FR.UTF-8`).
-   - `TIMEZONE` : Fuseau horaire (ex. : `Europe/Paris`).
-   - `KEYMAP` : Mappage du clavier (ex. : `fr` pour azerty).
+   | Partition | Type          | Début (`START`) | Fin (`END`)    | Système de Fichiers |
+   |-----------|---------------|-----------------|---------------|---------------------|
+   | PART1     | EFI/Boot      | `1MiB`          | `512MiB`      | `fat32`             |
+   | PART2     | Swap          | `512MiB`        | `2.5GiB`      | `swap`              |
+   | PART3     | Home          | `2.5GiB`        | `12.5GiB`     | `ext4`              |
+   | PART4     | Root          | `12.5GiB`       | `100%`        | `ext4`              |
 
-## Installation
-1. Démarrez depuis le support live d'Arch Linux.
-2. Montez le disque de votre choix et lancez le script d'installation :
-   - `chmod +x install_arch.sh`
-   - `./install_arch.sh`
-3. Suivez les instructions affichées à l'écran. 
-4. À la fin du processus, redémarrez votre système.
+   Les variables correspondantes dans `config.cfg` sont :
 
-## Remarques
-1. Assurez-vous d'avoir sauvegardé toutes les données importantes sur le disque cible, car ce script effacera toutes les partitions existantes.
-2. Si vous rencontrez des problèmes, vérifiez le fichier de log pour les erreurs.
-3. Pour des installations personnalisées, n'hésitez pas à modifier le script selon vos besoins.
+   - `PART1_START` et `PART1_END`
+   - `PART2_START` et `PART2_END`
+   - `PART3_START` et `PART3_END`
+   - `PART4_START` et `PART4_END`
+
+   Exemple dans `config.cfg` :
+   ```bash
+   PART1_START=1MiB
+   PART1_END=512MiB
+   PART2_START=512MiB
+   PART2_END=2.5GiB
+   PART3_START=2.5GiB
+   PART3_END=12.5GiB
+   PART4_START=12.5GiB
+   PART4_END=100%
 
 ## Auteurs
 [KHOULKHALI Montasir]
