@@ -48,6 +48,7 @@ Avant d'exécuter le script, vous devez modifier le fichier de configuration `co
    PART3_END=12.5GiB
    PART4_START=12.5GiB
    PART4_END=100%
+   ```
 
 ## Auteurs
 [KHOULKHALI Montasir]
