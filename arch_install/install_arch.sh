@@ -75,10 +75,10 @@ configure_network() {
 # 2. Préparation des disques
 prepare_disks() {
   echo "Préparation des disques..."
-  
+
   # Effacer les partitions existantes
   wipefs -a $DISK
-  
+
   # Créer une table de partition en fonction du mode (gpt pour UEFI, msdos pour BIOS)
   if [ "$PARTITION_TABLE_TYPE" = "gpt" ]; then
     parted -s $DISK mklabel gpt
@@ -88,7 +88,7 @@ prepare_disks() {
 
   # Création des partitions
   echo "Création des partitions en fonction de la configuration..."
-  
+
   # Partition 1 : EFI (pour UEFI) ou Boot (pour BIOS)
   if [ "$BOOT_MODE" = "UEFI" ]; then
     parted -s $DISK mkpart primary fat32 1MiB ${PART1_SIZE}
@@ -177,9 +177,9 @@ finalize_install() {
 # --- Exécution du script ---
 
 prompt_root_password  # Étape 0 : Demande du mot de passe root
-configure_network     # Étape 1 : Configuration du réseau
-prepare_disks         # Étape 2 : Préparation des disques
-install_base_system   # Étape 3 : Installation du système de base
-configure_system      # Étape 4 : Configuration du système
-install_bootloader    # Étape 5 : Installation du bootloader (GRUB)
+configure_network    # Étape 1 : Configuration du réseau
+prepare_disks        # Étape 2 : Préparation des disques
+install_base_system  # Étape 3 : Installation du système de base
+configure_system     # Étape 4 : Configuration du système
+install_bootloader   # Étape 5 : Installation du bootloader (GRUB)
 finalize_install      # Étape 6 : Finalisation de l'installation
