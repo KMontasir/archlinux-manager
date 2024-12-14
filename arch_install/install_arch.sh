@@ -86,31 +86,31 @@ prepare_disks() {
     parted -s $DISK mklabel msdos
   fi
 
-  # Création des partitions
+  # Création des partitions en utilisant les positions START et END
   echo "Création des partitions en fonction de la configuration..."
 
   # Partition 1 : EFI (pour UEFI) ou Boot (pour BIOS)
   if [ "$BOOT_MODE" = "UEFI" ]; then
-    parted -s $DISK mkpart primary fat32 1MiB ${PART1_SIZE}
+    parted -s $DISK mkpart primary fat32 $PART1_START $PART1_END
     parted -s $DISK set 1 boot on
     mkfs.fat -F32 ${DISK}1
   else
-    parted -s $DISK mkpart primary ext4 1MiB ${PART1_SIZE}
-    mkfs.ext4 ${DISK}1
+    parted -s $DISK mkpart primary ext4 $PART1_START $PART1_END
+    mkfs.ext4 -F ${DISK}1
   fi
 
   # Partition 2 : Swap
-  parted -s $DISK mkpart primary linux-swap ${PART1_SIZE} $((PART1_SIZE + PART2_SIZE))
+  parted -s $DISK mkpart primary linux-swap $PART2_START $PART2_END
   mkswap ${DISK}2
   swapon ${DISK}2
 
   # Partition 3 : Home
-  parted -s $DISK mkpart primary ext4 $((PART1_SIZE + PART2_SIZE)) $((PART1_SIZE + PART2_SIZE + PART3_SIZE))
-  mkfs.ext4 ${DISK}3
+  parted -s $DISK mkpart primary ext4 $PART3_START $PART3_END
+  mkfs.ext4 -F ${DISK}3
 
   # Partition 4 : Root
-  parted -s $DISK mkpart primary ext4 $((PART1_SIZE + PART2_SIZE + PART3_SIZE)) 100%
-  mkfs.ext4 ${DISK}4
+  parted -s $DISK mkpart primary ext4 $PART4_START $PART4_END
+  mkfs.ext4 -F ${DISK}4
 }
 
 # 3. Installation de base
@@ -177,9 +177,9 @@ finalize_install() {
 # --- Exécution du script ---
 
 prompt_root_password  # Étape 0 : Demande du mot de passe root
-configure_network    # Étape 1 : Configuration du réseau
-prepare_disks        # Étape 2 : Préparation des disques
-install_base_system  # Étape 3 : Installation du système de base
-configure_system     # Étape 4 : Configuration du système
-install_bootloader   # Étape 5 : Installation du bootloader (GRUB)
+configure_network     # Étape 1 : Configuration du réseau
+prepare_disks         # Étape 2 : Préparation des disques
+install_base_system   # Étape 3 : Installation du système de base
+configure_system      # Étape 4 : Configuration du système
+install_bootloader    # Étape 5 : Installation du bootloader (GRUB)
 finalize_install      # Étape 6 : Finalisation de l'installation
